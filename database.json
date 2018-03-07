@@ -1,0 +1,20 @@
+{
+
+	"test":{
+			"driver":"sqlite3",
+			"filename":"db/bolha_master.prod.sqlite"
+	},
+
+	"dev":{
+		"driver":"sqlite3",
+			"filename":"db/bolha_master.prod.sqlite"
+	},
+
+
+	"production":{
+		"driver":"sqlite3",
+		"filename":"db/bolha_master.prod.sqlite"
+	}
+
+
+}

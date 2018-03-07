@@ -1,0 +1,34 @@
+{
+  "name": "upcoming_theses",
+  "version": "1.0.0",
+  "description": "A tool to manage keywords",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.2",
+    "bower": "^1.7.9",
+    "db-migrate": "^0.10.0-beta.20",
+    "mysql": "^2.12.0",
+    "node-dbi": "^0.7.1",
+    "parsehub": "^0.1.1",
+    "percolator": "^1.5.0"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "request": "^2.78.0",
+    "sqlite3": "^3.1.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lukatopolovec/fleasearch.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "git@github.com:lukatopolovec/fleasearch.git/issues"
+  },
+  "homepage": "https://github.com/lukatopolovec/fleasearch#readme"
+}
