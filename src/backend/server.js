@@ -23,7 +23,7 @@ var Server = function(port){  //defining server for export
 	var casZacetek = 0; 
 	var vmesniCas = 0; 
 	//var j = schedule.scheduleJob(rule, function(){
-	var j = schedule.scheduleJob('04 * * * *', function(){
+	var j = schedule.scheduleJob('55 * * * *', function(){
 
 	
 		console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
@@ -214,7 +214,7 @@ function uploadXMLtoBucket(xml)
  	
 
  		let feed = new Feed({
- 			title: 'Nove nepremicnine v Mariborus',
+ 			title: 'Nove nepremicnine v Mariboru iz bolhe',
  			link: 'https://s3-eu-west-1.amazonaws.com/nodelukacrawlers/rssbolhafeed_new.xml',
  			updated : date
 
