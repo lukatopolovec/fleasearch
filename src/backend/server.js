@@ -17,7 +17,7 @@ var Server = function(port){  //defining server for export
 	var s3 = new AWS.S3({'region':'eu-west-1'});
 
 	var rule = new schedule.RecurrenceRule();
-	rule.seconds = [0,new schedule.Range(10,20,30,40,50)]; //how frequently should we start a new run job on parsehub. Every 3 minute
+	rule.seconds = [0,new schedule.Range(41,20,30,40,50)]; //how frequently should we start a new run job on parsehub. Every 3 minute
 	//rule.seconds = 5; //vsako minuto
 
 	var casZacetek = 0; 
@@ -36,7 +36,7 @@ var Server = function(port){  //defining server for export
 
 							getDataFromBolhaWebPage(parseHubJobValues.run_token);
 
-						}, 1000*60*10);  
+						}, 1000*60*2);  
 
 				 });
 
