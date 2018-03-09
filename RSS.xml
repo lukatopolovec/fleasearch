@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>Nove diplome, in prihajajoči zagovori diplom</title>
+        <link>https://s3-eu-west-1.amazonaws.com/nodelukacrawlers/rssthesesfeed.xml</link>
+        <description></description>
+        <lastBuildDate>Sun, 04 Mar 2018 20:06:02 GMT</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>Feed for Node.js</generator>
+        <item>
+            <title><![CDATA[Dinamično elektronsko breme, Študent: Matej Otič, Mentor/Zagovor:Kramberger, Iztok ]]></title>
+            <link>https://dk.um.si/IzpisGradiva.php?id=68279&amp;lang=slv</link>
+            <guid>https://dk.um.si/IzpisGradiva.php?id=68279&amp;lang=slv</guid>
+            <content:encoded><![CDATA[student: Matej Otič, mentor:1520193962428]]></content:encoded>
+        </item>
+    </channel>
+</rss>
