@@ -23,30 +23,30 @@ var Server = function(port){  //defining server for export
 	var casZacetek = 0; 
 	var vmesniCas = 0; 
 	//var j = schedule.scheduleJob(rule, function(){
-	var j = schedule.scheduleJob('55 * * * *', function(){
+	// var j = schedule.scheduleJob('06 * * * *', function(){
 
 	
-		console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
+	// 	console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
 
-				runParseEvent(function(parseHubJobValues){
-					console.log(parseHubJobValues.run_token + ":date" + parseHubJobValues.start_time) ;
+	// 			runParseEvent(function(parseHubJobValues){
+	// 				console.log(parseHubJobValues.run_token + ":date" + parseHubJobValues.start_time) ;
 
-						setTimeout(function () { 
-							console.log('Parse hub - read results - setTimeout'); 
+	// 					setTimeout(function () { 
+	// 						console.log('Parse hub - read results - setTimeout'); 
 
-							getDataFromBolhaWebPage(parseHubJobValues.run_token);
+	// 						getDataFromBolhaWebPage(parseHubJobValues.run_token);
 
-						}, 1000*60*2);  
+	// 					}, 1000*60*1);  
 
-				 });
+	// 			 });
 
 
-	});
+	// });
 
 	
 
 	//getDataFromBolhaWebPage(parseHubJobValues.run_token);
-	// getDataFromBolhaWebPage("tPqkdthtx5YK");
+	 getDataFromBolhaWebPage("tUQt0e17jTV7");
 
 
 
