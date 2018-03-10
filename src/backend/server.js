@@ -14,7 +14,9 @@ var AWS = require("aws-sdk");
 
 var Server = function(port){  //defining server for export
 	var server = Percolator({'port':port, 'autoLink':false, 'staticDir':__dirname+'/../frontend'}); 
-	var s3 = new AWS.S3({'region':'eu-west-1'});
+
+
+	var s3 = new AWS.S3();
 
 	var rule = new schedule.RecurrenceRule();
 	rule.seconds = [0,new schedule.Range(41,20,30,40,50)]; //how frequently should we start a new run job on parsehub. Every 3 minute
@@ -64,7 +66,7 @@ function uploadXMLtoBucket(xml)
 			    console.log(err);
 		}
 		else {
-			console.log("Uspesno shranjeno na AWS");
+			console.log("Uspesno shranjeno na S3 bucketu");
 		}
 
 	});			
@@ -158,23 +160,20 @@ function uploadXMLtoBucket(xml)
  	thesesJson.forEach(function(item, index){ 	
  		//we check if the item is already added to db
 
- 		console.log("For each:"+item.url);
+ 		//console.log("For each:"+item.url); 
 
  		dbSession.fetchAll('SELECT * FROM bolha WHERE url = ?', item.url, function (err, results) {
  			if (results.length<=0)
- 			{
-
+ 			{ 				
+ 				//this item doesn't exist yet, we add it to the database
  				
- 				//this item doesn't exist yet (that's good)
- 				
-					dbSession.query('INSERT into bolha (name,url,cena,url_slike) VALUES (?,?,?,?);',
-		  				[item.name,item.url ,item.cena,item.url_slike], function(err,results){  		  					
+					dbSession.query('INSERT into bolha (name,url,cena,url_slike) VALUES (?,?,?,?);',[item.name,item.url ,item.cena,item.url_slike], function(err,results){  		  					
   		  					if(err){
-  		  						console.log("Napaka pri dodajanju nepremicnine:"+err);
+  		  						console.log("There was an error adding to the database:"+err);
   		  					} else{
-  		  						console.log("Nova nepremicnina dodana v seznam:"+item.name);  		
-  		  						numberOfNepremicninAdded++;
-  		  						jsonToRSS.push([item.name,"",item.url ,item.cena,item.url_slike]);	  	
+  		  						console.log("We've added new realestate to the database"+item.name);  		
+  		  						numberOfNepremicninAdded++; 
+  		  						jsonToRSS.push([item.name,"",item.url ,item.cena,item.url_slike]);	  	 //we add it to the json.
 
 
   		  					}
@@ -183,7 +182,7 @@ function uploadXMLtoBucket(xml)
 		  						if(inProgress==Object.keys(thesesJson).length){
 		  							//call callback end of query  		  						
 		  							exportNewThesisToRSS(jsonToRSS);
-		  							console.log("konec");
+		  							console.log("Zadnja postaja v primeru da smo za konec dodali nepremicnino v postajo");
 		  						}
 		  					});				 
   		  		} 
@@ -193,9 +192,10 @@ function uploadXMLtoBucket(xml)
 		  						if(inProgress==Object.keys(thesesJson).length){
 		  							//call callback end of query  		  						
 		  							exportNewThesisToRSS(jsonToRSS);
-		  							console.log("konec2");
-		  						}
-		  			console.log("kriticna napaka");
+		  							console.log("Zadnja postaja da nismo dodali nepremicnine");
+		  						}else {
+		  								console.log("Nepremicnina je ze dodana v sistem, jo preskoci.");
+		  						}		  		
   		  		} 		  		
   		  });	 
   		
@@ -207,11 +207,10 @@ function uploadXMLtoBucket(xml)
  function exportNewThesisToRSS(listOfNewBolha)
  {
  	var date = new Date();
- 	console.log("export theses");
+ 	console.log("New realestates:");
  	console.dir(listOfNewBolha);
  	if(listOfNewBolha.length>0){
-  		console.log("Dodali smo nove diplome - funkcija:"+listOfNewBolha.length);
- 	
+  		console.log("Number of new realestates:"+listOfNewBolha.length); 	
 
  		let feed = new Feed({
  			title: 'Nove nepremicnine v Mariboru iz bolhe',
@@ -229,11 +228,8 @@ function uploadXMLtoBucket(xml)
 
  			});
  		});
- 		console.log("ZAKLJUCEK ");	 		
-		//console.log(feed.rss2());
-
-		uploadXMLtoBucket(feed.rss2());
-		
+ 		console.log("Transported to RSS and ready to be uploaded to S3 bucket");	
+		uploadXMLtoBucket(feed.rss2());	
 			
  	}
 
