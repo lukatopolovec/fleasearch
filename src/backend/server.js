@@ -15,6 +15,7 @@ var AWS = require("aws-sdk");
 var Server = function(port){  //defining server for export
 	var server = Percolator({'port':port, 'autoLink':false, 'staticDir':__dirname+'/../frontend'}); 
 
+	AWS.config.loadFromPath('awsconfig.json');
 
 	var s3 = new AWS.S3();
 
