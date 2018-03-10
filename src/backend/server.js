@@ -16,22 +16,19 @@ var Server = function(port){  //defining server for export
 	var server = Percolator({'port':port, 'autoLink':false, 'staticDir':__dirname+'/../frontend'}); 
 
 	AWS.config.loadFromPath('awsconfig.json');
-
+	var xmlFileName = "bolha&nepremicnine.xml";
 	var s3 = new AWS.S3();
-
-	var rule = new schedule.RecurrenceRule();
-	rule.seconds = [0,new schedule.Range(41,20,30,40,50)]; //how frequently should we start a new run job on parsehub. Every 3 minute
-	//rule.seconds = 5; //vsako minuto
+	var projectToken = "tVuHUUNHZrTO";
 
 	var casZacetek = 0; 
 	var vmesniCas = 0; 
-	//var j = schedule.scheduleJob(rule, function(){
-	var j = schedule.scheduleJob('10 * * * *', function(){
+
+	var j = schedule.scheduleJob('36 * * * *', function(){
 
 	
 		console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
 
-				runParseEvent(function(parseHubJobValues){
+				runParseEvent(projectToken, function(parseHubJobValues){
 					console.log(parseHubJobValues.run_token + ":date" + parseHubJobValues.start_time) ;
 
 						setTimeout(function () { 
@@ -39,24 +36,20 @@ var Server = function(port){  //defining server for export
 
 							getDataFromBolhaWebPage(parseHubJobValues.run_token);
 
-						}, 1000*60*10);  
+						}, 1000*60*5);  
 
 				 });
 
 
 	});
 
-	
-
-	//getDataFromBolhaWebPage(parseHubJobValues.run_token);
-	 //getDataFromBolhaWebPage("tUQt0e17jTV7");
-
-
+	// getDataFromBolhaWebPage("tQP6n2s-68DY");
+	// getDataFromBolhaWebPage("tUQt0e17jTV7");
 
 function uploadXMLtoBucket(xml)
 {
 		var params = {
-		Key: "rssbolhafeed_new.xml",
+		Key: xmlFileName,
 		Bucket:"nodelukacrawlers",
 		Body: xml,
 		ACL:"public-read",
@@ -72,7 +65,6 @@ function uploadXMLtoBucket(xml)
 
 	});			
 }
-
 
 
 	server.route('/api/getstudents',{
@@ -101,11 +93,11 @@ function uploadXMLtoBucket(xml)
 		}
 	});
 
-	function runParseEvent(callback){
+	function runParseEvent(TokenProject, callback){
 
 	//we need api key and project
 	var opts = {
-		uri: 'https://www.parsehub.com/api/v2/projects/tD0rUmnohUTf/run?api_key=twAgSfGzzLtgax_mVwPvSfX8',
+		uri: 'https://www.parsehub.com/api/v2/projects/'+TokenProject+'/run?api_key=twAgSfGzzLtgax_mVwPvSfX8',
 		gzip: true,
 		json:true
 	}
@@ -122,8 +114,6 @@ function uploadXMLtoBucket(xml)
 	 }
 
 
-
-
 	 function getDataFromBolhaWebPage(lastRunToken)
 	 {
 	 	console.log("smo v getDataFromBolhaWebPage:"+lastRunToken);
@@ -138,10 +128,14 @@ function uploadXMLtoBucket(xml)
  		// now body and res.body both will contain decoded content.
  		//writeThesesInDB(body.zadnjeDiplome,res);
  		console.log("pred funkcijo");
- 		if(typeof body.seznam_nepremicnin !== 'undefined' && body.seznam_nepremicnin !== null)
+ 		//console.dir(body);
+ 	
+ 		
+ 		if(typeof body.nepremicnine !== 'undefined' && body.nepremicnine !== null)
  		{
- 			console.log("ni prazno" + body.seznam_nepremicnin);
- 			writeThesesInDB(body.seznam_nepremicnin,res);
+ 		
+			 		
+ 			writeThesesInDB(body.nepremicnine,res);
 		}
 		else 
 		{
@@ -161,25 +155,27 @@ function uploadXMLtoBucket(xml)
 	var numberOfNepremicninAdded = 0;
 	var jsonToRSS = [];
 
-
+	console.dir(thesesJson);
  	thesesJson.forEach(function(item, index){ 	
  		//we check if the item is already added to db
-
- 		//console.log("For each:"+item.url); 
-
+ 	
  		dbSession.fetchAll('SELECT * FROM bolha WHERE url = ?', item.url, function (err, results) {
  			if (results.length<=0)
  			{ 				
  				//this item doesn't exist yet, we add it to the database
- 				
-					dbSession.query('INSERT into bolha (name,url,cena,url_slike) VALUES (?,?,?,?);',[item.name,item.url ,item.cena,item.url_slike], function(err,results){  		  					
+ 				if(typeof item.Opis !== 'undefined')
+ 				{
+ 					item.naslov = item.naslov + " " + item.Opis;
+ 				}
+
+
+					dbSession.query('INSERT into bolha (name,url,cena,url_slike) VALUES (?,?,?,?);',[item.naslov,item.url ,item.Cena,item.url_slike], function(err,results){  		  					
   		  					if(err){
   		  						console.log("There was an error adding to the database:"+err);
   		  					} else{
   		  						console.log("We've added new realestate to the database"+item.name);  		
   		  						numberOfNepremicninAdded++; 
-  		  						jsonToRSS.push([item.name,"",item.url ,item.cena,item.url_slike]);	  	 //we add it to the json.
-
+  		  						jsonToRSS.push([item.naslov,"",item.url ,item.Cena,item.url_slike]);	  	 //we add it to the json.
 
   		  					}
   		  					inProgress++;
@@ -190,6 +186,7 @@ function uploadXMLtoBucket(xml)
 		  							console.log("Zadnja postaja v primeru da smo za konec dodali nepremicnino v postajo");
 		  						}
 		  					});				 
+ 				
   		  		} 
   		  		else {
   		  				inProgress++;
@@ -216,10 +213,11 @@ function uploadXMLtoBucket(xml)
  	console.dir(listOfNewBolha);
  	if(listOfNewBolha.length>0){
   		console.log("Number of new realestates:"+listOfNewBolha.length); 	
+  		console.log("S3 Adress:"+"https://s3-eu-west-1.amazonaws.com/nodelukacrawlers/"+xmlFileName);
 
  		let feed = new Feed({
  			title: 'Nove nepremicnine v Mariboru iz bolhe',
- 			link: 'https://s3-eu-west-1.amazonaws.com/nodelukacrawlers/rssbolhafeed_new.xml',
+ 			link: 'https://s3-eu-west-1.amazonaws.com/nodelukacrawlers/'+xmlFileName,
  			updated : date
 
  		});
@@ -239,9 +237,6 @@ function uploadXMLtoBucket(xml)
  	}
 
  }
-
-
-
 
 
  return server;
