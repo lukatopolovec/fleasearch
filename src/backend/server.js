@@ -26,30 +26,30 @@ var Server = function(port){  //defining server for export
 	var casZacetek = 0; 
 	var vmesniCas = 0; 
 	//var j = schedule.scheduleJob(rule, function(){
-	// var j = schedule.scheduleJob('06 * * * *', function(){
+	var j = schedule.scheduleJob('10 * * * *', function(){
 
 	
-	// 	console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
+		console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
 
-	// 			runParseEvent(function(parseHubJobValues){
-	// 				console.log(parseHubJobValues.run_token + ":date" + parseHubJobValues.start_time) ;
+				runParseEvent(function(parseHubJobValues){
+					console.log(parseHubJobValues.run_token + ":date" + parseHubJobValues.start_time) ;
 
-	// 					setTimeout(function () { 
-	// 						console.log('Parse hub - read results - setTimeout'); 
+						setTimeout(function () { 
+							console.log('Parse hub - read results - setTimeout'); 
 
-	// 						getDataFromBolhaWebPage(parseHubJobValues.run_token);
+							getDataFromBolhaWebPage(parseHubJobValues.run_token);
 
-	// 					}, 1000*60*1);  
+						}, 1000*60*10);  
 
-	// 			 });
+				 });
 
 
-	// });
+	});
 
 	
 
 	//getDataFromBolhaWebPage(parseHubJobValues.run_token);
-	 getDataFromBolhaWebPage("tUQt0e17jTV7");
+	 //getDataFromBolhaWebPage("tUQt0e17jTV7");
 
 
 
@@ -138,10 +138,14 @@ function uploadXMLtoBucket(xml)
  		// now body and res.body both will contain decoded content.
  		//writeThesesInDB(body.zadnjeDiplome,res);
  		console.log("pred funkcijo");
- 		if(!body.seznam_nepremicnin||body.seznam_nepremicnin.length>0)
+ 		if(typeof body.seznam_nepremicnin !== 'undefined' && body.seznam_nepremicnin !== null)
  		{
- 			console.log("ni prazno" + body);
+ 			console.log("ni prazno" + body.seznam_nepremicnin);
  			writeThesesInDB(body.seznam_nepremicnin,res);
+		}
+		else 
+		{
+			console.log("Parsehub returned empty values");
 		}
 
  	}).on('error',(e)=>{
