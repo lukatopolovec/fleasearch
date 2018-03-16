@@ -23,7 +23,7 @@ var Server = function(port){  //defining server for export
 	var casZacetek = 0; 
 	var vmesniCas = 0; 
 
-	var j = schedule.scheduleJob('36 * * * *', function(){
+	var j = schedule.scheduleJob('06 * * * *', function(){
 
 	
 		console.log("ParseHub job started - it takes some time to get result: "+ Date.now());
@@ -43,8 +43,7 @@ var Server = function(port){  //defining server for export
 
 	});
 
-	// getDataFromBolhaWebPage("tQP6n2s-68DY");
-	// getDataFromBolhaWebPage("tUQt0e17jTV7");
+	// getDataFromBolhaWebPage("t53cKRgR6XCz");
 
 function uploadXMLtoBucket(xml)
 {
@@ -128,8 +127,8 @@ function uploadXMLtoBucket(xml)
  		// now body and res.body both will contain decoded content.
  		//writeThesesInDB(body.zadnjeDiplome,res);
  		console.log("pred funkcijo");
- 		//console.dir(body);
  	
+ 		
  		
  		if(typeof body.nepremicnine !== 'undefined' && body.nepremicnine !== null)
  		{
@@ -223,14 +222,48 @@ function uploadXMLtoBucket(xml)
  		});
 
  		listOfNewBolha.forEach(function(item)	{
- 			feed.addItem({
- 				title : item[3]+";"+ item[0],
- 				link : item[2],
- 				guid : item[2],
- 				date: date				
+		//sort by price - price
 
- 			});
- 		});
+	
+		var price;
+	
+
+		price = item[3].replace('.','');
+		price = price.replace('.','');		
+		price = price.replace('€','');
+		price = price.replace('/ m2','');
+		price = price.replace('/m2','');
+		price = price.replace('/mesec','');
+
+		if(price!=="Najamem" && price!==null) //first filter
+		{
+					
+
+			var intValue = parseInt(price);
+
+			if(intValue>5000 && intValue<2300000 || price=="Po dogovoru" ) //price filter
+			{
+
+				//maribor filter
+				if(item[0].indexOf("Maribo") > -1 || item[0].indexOf("MB") > -1|| item[0].indexOf("Tabor") > -1|| item[0].indexOf("Melje") > -1|| item[0].indexOf("Tezno") > -1) {
+				console.log("Vsebina MAribor:"+item[0] + " Cena je:" +price);
+
+					//console.log("original price:"+item[3]); 	
+				//price filter
+				//console.log("parsed price:"+price); 	
+				feed.addItem({
+					title : item[3]+";"+ item[0],
+					link : item[2],
+					guid : item[2],
+					date: date				
+
+				});	
+			}
+		}		
+	}
+});
+
+
  		console.log("Transported to RSS and ready to be uploaded to S3 bucket");	
 		uploadXMLtoBucket(feed.rss2());	
 			
