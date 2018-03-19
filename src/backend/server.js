@@ -224,9 +224,12 @@ function uploadXMLtoBucket(xml)
  		listOfNewBolha.forEach(function(item)	{
 		//sort by price - price
 
-	
 		var price;
 	
+		if(typeof item[3] == 'undefined')
+		{
+			item[3] = "";
+		}
 
 		price = item[3].replace('.','');
 		price = price.replace('.','');		
